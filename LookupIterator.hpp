@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright(c) 2018 Thomas Monkman
 // 
@@ -63,10 +63,10 @@ template<class Src, class Lookup>
 struct lookup_t {
 	Src src;
 	Lookup lookup;
-	constexpr auto begin() const {
+	constexpr lookup_itr<Src, Lookup> begin() const {
 		return lookup_itr<Src, Lookup>{ std::forward<Src>(src), std::forward<Lookup>(lookup) };
 	}
-	constexpr auto end() const {
+	constexpr lookup_itr<Src, Lookup> end() const {
 		return lookup_itr<Src, Lookup>{ std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{} };
 	}
 };

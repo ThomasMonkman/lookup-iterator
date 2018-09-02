@@ -1,4 +1,4 @@
-#include "catch/catch.hpp"
+﻿#include "catch/catch.hpp"
 
 #include "../LookupIterator.hpp"
 
@@ -7,7 +7,7 @@
 #include <vector>
 
 TEST_CASE("vector", "[vector]") {
-	
+
 	SECTION("none const vectors") {
 		std::vector<int> lookup_vector = { 0, 2 };
 		std::vector<int> data = { 10, 20, 30 };
@@ -49,6 +49,36 @@ TEST_CASE("vector", "[vector]") {
 		a++;
 		a++;
 		REQUIRE(a == lookup(data, lookup_vector).end());
+	}
+	SECTION("r value") {
+		const std::vector<int> data = { 10, 20, 30 };
+		data.begin();
+		auto a = lookup(data, std::vector<int>(0, 2)).begin();
+		REQUIRE(*a == 10);
+		a++;
+		REQUIRE(*a == 30);
+	}
+	SECTION("static") {
+		static const std::vector<int> lookup_vector = { 0, 2 };
+		static const std::vector<int> data = { 10, 20, 30 };
+		auto a = lookup(data, lookup_vector).begin();
+		REQUIRE(*a == 10);
+		a++;
+		REQUIRE(*a == 30);
+	}
+	SECTION("mutate") {
+		const std::vector<int> lookup_vector = { 0, 2 };
+		std::vector<int> data = { 10, 20, 30 };
+		auto a = lookup(data, lookup_vector).begin();
+		REQUIRE(*a == 10);
+		(*a) = 5;
+		REQUIRE(*a == 5);
+		REQUIRE(data[0] == 5);
+		a++;
+		REQUIRE(*a == 30);
+		(*a) += 5;
+		REQUIRE(*a == 35);
+		REQUIRE(data[2] == 35);
 	}
 
 }
