@@ -1,0 +1,20 @@
+#include catch
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${PROJECT_SOURCE_DIR}/tests/catch/catch.hpp)
+
+#add tests
+set(LOOKUPITERATOR_UNIT_TEST_TARGET_NAME "LookupIterator_unit")
+add_executable(${LOOKUPITERATOR_UNIT_TEST_TARGET_NAME}
+	${PROJECT_SOURCE_DIR}/tests/CatchMain.cpp
+	${PROJECT_SOURCE_DIR}/tests/Test.cpp)
+
+	
+target_link_libraries(${LOOKUPITERATOR_UNIT_TEST_TARGET_NAME}
+	Catch)
+
+add_test(NAME "${LOOKUPITERATOR_UNIT_TEST_TARGET_NAME}_default"
+	COMMAND ${LOOKUPITERATOR_UNIT_TEST_TARGET_NAME}
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
+install(TARGETS ${LOOKUPITERATOR_UNIT_TEST_TARGET_NAME} DESTINATION ${PROJECT_BINARY_DIR}/bin)
