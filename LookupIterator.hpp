@@ -64,10 +64,11 @@ struct lookup_t {
 	Src src;
 	Lookup lookup;
 	constexpr lookup_itr<Src, Lookup> begin() const {
-		return lookup_itr<Src, Lookup>{ std::forward<Src>(src), std::forward<Lookup>(lookup) };
+		return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
+		return lookup_itr<Src, Lookup>( std::forward<Src>(src), std::forward<Lookup>(lookup) );
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
-		return lookup_itr<Src, Lookup>{ std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{} };
+		return lookup_itr<Src, Lookup>( std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{} );
 	}
 };
 
