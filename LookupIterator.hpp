@@ -43,7 +43,7 @@ template<
 			using std::begin;
 			_lookup_itr = begin(_lookup);
 		}
-		explicit lookup_itr(Src&& src, Lookup&& lookup, End end) : _src(src), _lookup(lookup) {
+		explicit lookup_itr(Src&& src, Lookup&& lookup, End) : _src(src), _lookup(lookup) {
 			using std::end;
 			_lookup_itr = end(_lookup);
 		}
@@ -70,8 +70,8 @@ struct lookup_t {
 	Lookup lookup;
 
 	constexpr lookup_itr<Src, Lookup> begin() const {
-		//return lookup_itr<Src, Lookup>(src, lookup);
-		return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
+		return lookup_itr<Src, Lookup>(src, lookup);
+		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
 		return lookup_itr<Src, Lookup>(src, lookup, lookup_itr<Src, Lookup>::End{});

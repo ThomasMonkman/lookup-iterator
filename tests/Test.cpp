@@ -51,7 +51,8 @@ TEST_CASE("vector", "[vector]") {
 		REQUIRE(a == lookup(data, lookup_vector).end());
 	}
 	SECTION("r value") {
-		const std::vector<int> data = { 10, 20, 30 };
+		//const std::vector<int> data = { 10, 20, 30 };
+		const std::vector<char> data = { 'a', 'b', 'c' };
 		auto a = lookup(data, std::vector<int>(0, 2)).begin();
 		REQUIRE(*a == 10);
 		a++;
