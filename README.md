@@ -21,3 +21,37 @@ will output
 10
 30
 ```
+
+Data can be anything that specifies an `operator[]`, such as map
+```c++
+std::vector<char> lookup_vector = { 'b', 'c' };
+std::map<char, int> data = { {'a', 10}, {'b', 20}, {'c', 30} };
+for (const auto& x : lookup(data, lookup_vector)) {
+	std::cout << x << '\n';
+}
+```
+will output
+```
+20
+30
+```
+
+`lookup` also defaults to a vector, such that initialisation lists can be used
+```c++
+const std::vector<int> data = { 10, 20, 30 };
+for (const auto& x : lookup(data, { 0, 2 })) {
+	std::cout << x << '\n';
+}
+```
+will output
+```
+10
+30
+```
+
+## Requirements
+```c++
+lookup(Src src, Lookup lookup)
+```
+* `Lookup` must be allow either `++` `--` operators
+* `Src` must have an `operator[]`

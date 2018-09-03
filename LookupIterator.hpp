@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 // 
 // Copyright(c) 2018 Thomas Monkman
 // 
@@ -22,26 +22,37 @@
 
 #ifndef LOOKUPITERATOR_HPP
 #define LOOKUPITERATOR_HPP
+
+#include <iterator>
+#include <type_traits>
+#include <vector>
+
 template<class Src, class Lookup>
 struct lookup_itr {
 private:
+	typedef decltype(begin(std::declval<Src>())) src_itr_t;
+	typedef decltype(*begin(std::declval<Src>())) src_itr_value;
+	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
+
 	Src _src;
 	Lookup _lookup;
-	//using lookup_itr_t = contained_iterator_t<Lookup>;
-	//using src_itr_t = contained_iterator_t<Src>;
-	typedef decltype(begin(std::declval<Src>())) src_itr_t;
-	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
-	//using lookup_itr_t = Lookup::iterator;
-	//using src_itr_t = typename Src::iterator;
 	lookup_itr_t _lookup_itr;
-	//typename contained_iterator_t<typename std::remove_const<Lookup>::type> _lookup_itr;
 public:
+	//static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "Src must allow random access interation");
+
+	using value_type = typename src_itr_t::value_type;
+	using difference_type = typename lookup_itr_t::difference_type;
+	using pointer = typename src_itr_t::pointer;
+	using reference = typename src_itr_t::reference;
+	using iterator_category = typename lookup_itr_t::iterator_category;
+
 	struct End {};
-	explicit lookup_itr(Src&& src, Lookup&& lookup) : _src(src), _lookup(lookup) {
+
+	lookup_itr(Src&& src, Lookup&& lookup) : _src(src), _lookup(lookup) {
 		using std::begin;
 		_lookup_itr = begin(_lookup);
 	}
-	explicit lookup_itr(Src&& src, Lookup&& lookup, End end) : _src(src), _lookup(lookup) {
+	lookup_itr(Src&& src, Lookup&& lookup, End) : _src(src), _lookup(lookup) {
 		using std::end;
 		_lookup_itr = end(_lookup);
 	}
@@ -54,25 +65,40 @@ public:
 		++_lookup_itr;
 		return *this;
 	}
-	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr];/* _src[*_lookup_itr];*/ }
+	lookup_itr operator--(int) /* postfix */ {
+		//static_assert(std::is_same<typename iterator_category, std::bidirectional_iterator_tag>::value, "LookUp does not support bidirectional iteration");
+		auto temp(*this);
+		--_lookup_itr;
+		return temp;
+	}
+	lookup_itr& operator--()    /* prefix */ {
+		//static_assert(std::is_same<typename iterator_category, std::bidirectional_iterator_tag>::value, "LookUp does not support bidirectional iteration");
+		--_lookup_itr;
+		return *this;
+	}
+	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
 	bool      operator==(const lookup_itr& rhs) const { return _lookup_itr == rhs._lookup_itr; }
 	bool      operator!=(const lookup_itr& rhs) const { return _lookup_itr != rhs._lookup_itr; }
 };
 
 template<class Src, class Lookup>
 struct lookup_t {
+	lookup_t(Src&& src, Lookup&& lookup) :
+		src(std::forward<Src>(src)),
+		lookup(std::forward<Lookup>(lookup)) {}
 	Src src;
 	Lookup lookup;
-	constexpr auto begin() const {
-		return lookup_itr<Src, Lookup>{ std::forward<Src>(src), std::forward<Lookup>(lookup) };
+
+	constexpr lookup_itr<Src, Lookup> begin() const {
+		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup));
 	}
-	constexpr auto end() const {
-		return lookup_itr<Src, Lookup>{ std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{} };
+	constexpr lookup_itr<Src, Lookup> end() const {
+		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup), (typename lookup_itr<Src, Lookup>::End()));
 	}
 };
 
-template<class Src, class Lookup>
+template<class Src, class Lookup = std::vector<std::size_t>>
 lookup_t<Src, Lookup> lookup(Src&& src, Lookup&& lookup) {
-	return { std::forward<Src>(src), std::forward<Lookup>(lookup) };
+	return lookup_t<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 }
 #endif
