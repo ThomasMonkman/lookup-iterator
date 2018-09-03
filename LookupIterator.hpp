@@ -22,41 +22,43 @@
 
 #ifndef LOOKUPITERATOR_HPP
 #define LOOKUPITERATOR_HPP
-template<class Src, class Lookup>
-struct lookup_itr {
-private:
-	Src _src;
-	Lookup _lookup;
-	//using lookup_itr_t = contained_iterator_t<Lookup>;
-	//using src_itr_t = contained_iterator_t<Src>;
-	typedef decltype(begin(std::declval<Src>())) src_itr_t;
-	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
-	//using lookup_itr_t = Lookup::iterator;
-	//using src_itr_t = typename Src::iterator;
-	lookup_itr_t _lookup_itr;
-	//typename contained_iterator_t<typename std::remove_const<Lookup>::type> _lookup_itr;
-public:
-	struct End {};
-	explicit lookup_itr(Src&& src, Lookup&& lookup) : _src(src), _lookup(lookup) {
-		using std::begin;
-		_lookup_itr = begin(_lookup);
-	}
-	explicit lookup_itr(Src&& src, Lookup&& lookup, End end) : _src(src), _lookup(lookup) {
-		using std::end;
-		_lookup_itr = end(_lookup);
-	}
-	lookup_itr operator++(int) /* postfix */ {
-		auto temp(*this);
-		++_lookup_itr;
-		return temp;
-	}
-	lookup_itr& operator++()    /* prefix */ {
-		++_lookup_itr;
-		return *this;
-	}
-	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
-	bool      operator==(const lookup_itr& rhs) const { return _lookup_itr == rhs._lookup_itr; }
-	bool      operator!=(const lookup_itr& rhs) const { return _lookup_itr != rhs._lookup_itr; }
+template<
+	class S, class L,
+	class Src = typename std::remove_const<S>::type, class Lookup = typename std::remove_const<L>::type>
+	struct lookup_itr {
+	private:
+		Src _src;
+		Lookup _lookup;
+		//using lookup_itr_t = contained_iterator_t<Lookup>;
+		//using src_itr_t = contained_iterator_t<Src>;
+		typedef decltype(begin(std::declval<Src>())) src_itr_t;
+		typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
+		//using lookup_itr_t = Lookup::iterator;
+		//using src_itr_t = typename Src::iterator;
+		lookup_itr_t _lookup_itr;
+		//typename contained_iterator_t<typename std::remove_const<Lookup>::type> _lookup_itr;
+	public:
+		struct End {};
+		explicit lookup_itr(Src&& src, Lookup&& lookup) : _src(src), _lookup(lookup) {
+			using std::begin;
+			_lookup_itr = begin(_lookup);
+		}
+		explicit lookup_itr(Src&& src, Lookup&& lookup, End end) : _src(src), _lookup(lookup) {
+			using std::end;
+			_lookup_itr = end(_lookup);
+		}
+		lookup_itr operator++(int) /* postfix */ {
+			auto temp(*this);
+			++_lookup_itr;
+			return temp;
+		}
+		lookup_itr& operator++()    /* prefix */ {
+			++_lookup_itr;
+			return *this;
+		}
+		decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
+		bool      operator==(const lookup_itr& rhs) const { return _lookup_itr == rhs._lookup_itr; }
+		bool      operator!=(const lookup_itr& rhs) const { return _lookup_itr != rhs._lookup_itr; }
 };
 
 template<class Src, class Lookup>
@@ -68,8 +70,8 @@ struct lookup_t {
 	Lookup lookup;
 
 	constexpr lookup_itr<Src, Lookup> begin() const {
-		return lookup_itr<Src, Lookup>(src, lookup);
-		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
+		//return lookup_itr<Src, Lookup>(src, lookup);
+		return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
 		return lookup_itr<Src, Lookup>(src, lookup, lookup_itr<Src, Lookup>::End{});

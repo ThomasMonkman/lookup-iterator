@@ -52,10 +52,10 @@ TEST_CASE("vector", "[vector]") {
 	}
 	SECTION("r value") {
 		const std::vector<int> data = { 10, 20, 30 };
-		//auto a = lookup(data, std::vector<int>(0, 2)).begin();
-		//REQUIRE(*a == 10);
-		//a++;
-		//REQUIRE(*a == 30);
+		auto a = lookup(data, std::vector<int>(0, 2)).begin();
+		REQUIRE(*a == 10);
+		a++;
+		REQUIRE(*a == 30);
 	}
 	SECTION("static") {
 		static const std::vector<int> lookup_vector = { 0, 2 };
