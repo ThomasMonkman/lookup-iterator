@@ -54,26 +54,31 @@ public:
 		++_lookup_itr;
 		return *this;
 	}
-	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr];/* _src[*_lookup_itr];*/ }
+	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
 	bool      operator==(const lookup_itr& rhs) const { return _lookup_itr == rhs._lookup_itr; }
 	bool      operator!=(const lookup_itr& rhs) const { return _lookup_itr != rhs._lookup_itr; }
 };
 
 template<class Src, class Lookup>
 struct lookup_t {
+	lookup_t(Src&& src, Lookup&& lookup) :
+		src(std::forward<Src>(src)),
+		lookup(std::forward<Lookup>(lookup)) {}
 	Src src;
 	Lookup lookup;
+
 	constexpr lookup_itr<Src, Lookup> begin() const {
-		return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
-		return lookup_itr<Src, Lookup>( std::forward<Src>(src), std::forward<Lookup>(lookup) );
+		return lookup_itr<Src, Lookup>(src, lookup);
+		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
-		return lookup_itr<Src, Lookup>( std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{} );
+		return lookup_itr<Src, Lookup>(src, lookup, lookup_itr<Src, Lookup>::End{});
+		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{});
 	}
 };
 
 template<class Src, class Lookup>
 lookup_t<Src, Lookup> lookup(Src&& src, Lookup&& lookup) {
-	return { std::forward<Src>(src), std::forward<Lookup>(lookup) };
+	return lookup_t<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 }
 #endif
