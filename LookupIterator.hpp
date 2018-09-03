@@ -37,7 +37,7 @@ private:
 	Lookup _lookup;
 	lookup_itr_t _lookup_itr;
 public:
-	static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "Src must allow random access interation");
+	//static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "Src must allow random access interation");
 
 	using value_type = typename src_itr_t::value_type;
 	using difference_type = typename lookup_itr_t::difference_type;
@@ -62,6 +62,17 @@ public:
 	}
 	lookup_itr& operator++()    /* prefix */ {
 		++_lookup_itr;
+		return *this;
+	}
+	lookup_itr operator--(int) /* postfix */ {
+		//static_assert(std::is_same<typename iterator_category, std::bidirectional_iterator_tag>::value, "LookUp does not support bidirectional iteration");
+		auto temp(*this);
+		--_lookup_itr;
+		return temp;
+	}
+	lookup_itr& operator--()    /* prefix */ {
+		//static_assert(std::is_same<typename iterator_category, std::bidirectional_iterator_tag>::value, "LookUp does not support bidirectional iteration");
+		--_lookup_itr;
 		return *this;
 	}
 	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
