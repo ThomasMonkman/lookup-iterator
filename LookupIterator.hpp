@@ -22,25 +22,27 @@
 
 #ifndef LOOKUPITERATOR_HPP
 #define LOOKUPITERATOR_HPP
-template<
-	/*class S, class L,
-	class Src = typename std::remove_const<S>::type, class Lookup = typename std::remove_const<L>::type*/
-	class Src, class Lookup
->
+
+#include <iterator>
+template<class Src, class Lookup>
 struct lookup_itr {
 private:
+	typedef decltype(begin(std::declval<Src>())) src_itr_t;
+	typedef decltype(*begin(std::declval<Src>())) src_itr_value;
+	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
+
 	Src _src;
 	Lookup _lookup;
-	//using lookup_itr_t = contained_iterator_t<Lookup>;
-	//using src_itr_t = contained_iterator_t<Src>;
-	typedef decltype(begin(std::declval<Src>())) src_itr_t;
-	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
-	//using lookup_itr_t = Lookup::iterator;
-	//using src_itr_t = typename Src::iterator;
 	lookup_itr_t _lookup_itr;
-	//typename contained_iterator_t<typename std::remove_const<Lookup>::type> _lookup_itr;
 public:
+	using value_type = typename src_itr_t::value_type;
+	using difference_type = typename lookup_itr_t::difference_type;
+	using pointer = typename src_itr_t::pointer;
+	using reference = typename src_itr_t::reference;
+	using iterator_category = typename lookup_itr_t::iterator_category;
+
 	struct End {};
+
 	lookup_itr(Src&& src, Lookup&& lookup) : _src(src), _lookup(lookup) {
 		using std::begin;
 		_lookup_itr = begin(_lookup);
@@ -73,12 +75,9 @@ struct lookup_t {
 
 	constexpr lookup_itr<Src, Lookup> begin() const {
 		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup));
-		//return lookup_itr<Src, Lookup>{src, lookup};
-		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
 		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup), (lookup_itr<Src, Lookup>::End()));
-		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{});
 	}
 };
 
