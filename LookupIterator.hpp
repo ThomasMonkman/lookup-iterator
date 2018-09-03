@@ -23,8 +23,10 @@
 #ifndef LOOKUPITERATOR_HPP
 #define LOOKUPITERATOR_HPP
 template<
-	class S, class L,
-	class Src = typename std::remove_const<S>::type, class Lookup = typename std::remove_const<L>::type>
+	/*class S, class L,
+	class Src = typename std::remove_const<S>::type, class Lookup = typename std::remove_const<L>::type*/
+	class Src, class Lookup
+>
 	struct lookup_itr {
 	private:
 		Src _src;
@@ -70,11 +72,11 @@ struct lookup_t {
 	Lookup lookup;
 
 	constexpr lookup_itr<Src, Lookup> begin() const {
-		return lookup_itr<Src, Lookup>(src, lookup);
+		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup));
 		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
-		return lookup_itr<Src, Lookup>(src, lookup, lookup_itr<Src, Lookup>::End{});
+		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup), lookup_itr<Src, Lookup>::End{});
 		//return lookup_itr<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup), lookup_itr<Src, Lookup>::End{});
 	}
 };

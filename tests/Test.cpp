@@ -5,6 +5,8 @@
 #include "Util/TestHelper.hpp"
 
 #include <vector>
+#include <map>
+#include <list>
 
 TEST_CASE("vector", "[vector]") {
 
@@ -51,9 +53,8 @@ TEST_CASE("vector", "[vector]") {
 		REQUIRE(a == lookup(data, lookup_vector).end());
 	}
 	SECTION("r value") {
-		//const std::vector<int> data = { 10, 20, 30 };
-		const std::vector<char> data = { 'a', 'b', 'c' };
-		auto a = lookup(data, std::vector<int>(0, 2)).begin();
+		const std::vector<int> data = { 10, 20, 30 };
+		auto a = lookup(data, std::vector<int>{0, 2}).begin();
 		REQUIRE(*a == 10);
 		a++;
 		REQUIRE(*a == 30);
@@ -80,5 +81,27 @@ TEST_CASE("vector", "[vector]") {
 		REQUIRE(*a == 35);
 		REQUIRE(data[2] == 35);
 	}
+}
+TEST_CASE("map", "[map]") {
 
+	SECTION("none const vectors") {
+		std::vector<char> lookup_vector = { 'b', 'c' };
+		std::map<char, int> data = { {'a', 10}, {'b', 20}, {'c', 30} };
+		auto a = lookup(data, lookup_vector).begin();
+		REQUIRE(*a == 20);
+		a++;
+		REQUIRE(*a == 30);
+	}
+}
+
+TEST_CASE("lookup list", "[lookup]") {
+
+	SECTION("none const vectors") {
+		std::list<char> lookup_vector = { 'b', 'c' };
+		std::map<char, int> data = { {'a', 10}, {'b', 20}, {'c', 30} };
+		auto a = lookup(data, lookup_vector).begin();
+		REQUIRE(*a == 20);
+		a++;
+		REQUIRE(*a == 30);
+	}
 }
