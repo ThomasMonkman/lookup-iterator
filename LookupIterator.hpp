@@ -24,6 +24,8 @@
 #define LOOKUPITERATOR_HPP
 
 #include <iterator>
+#include <type_traits>
+
 template<class Src, class Lookup>
 struct lookup_itr {
 private:
@@ -35,6 +37,8 @@ private:
 	Lookup _lookup;
 	lookup_itr_t _lookup_itr;
 public:
+	static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "Src must allow random access interation");
+
 	using value_type = typename src_itr_t::value_type;
 	using difference_type = typename lookup_itr_t::difference_type;
 	using pointer = typename src_itr_t::pointer;
