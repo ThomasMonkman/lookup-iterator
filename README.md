@@ -4,10 +4,7 @@
 | ------------- |:-------------:|
 | **Master**    | [![Master](https://travis-ci.org/ThomasMonkman/lookup-iterator.svg?branch=master)](https://travis-ci.org/ThomasMonkman/lookup-iterator)|
 
-
-# lookup-iterator
 Iterate one container with indexes from another
-
 
 ```c++
 const std::vector<int> lookup_vector = { 0, 2 };
