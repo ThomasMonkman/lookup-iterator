@@ -28,6 +28,15 @@ TEST_CASE("vector", "[vector]") {
 		a--;
 		REQUIRE(*a == 10);
 	}
+	SECTION("default") {
+		std::vector<int> data = { 10, 20, 30 };
+		auto a = lookup(data, { 0, 2 }).begin();
+		REQUIRE(*a == 10);
+		a++;
+		REQUIRE(*a == 30);
+		a--;
+		REQUIRE(*a == 10);
+	}
 	SECTION("const lookup") {
 		const std::vector<int> lookup_vector = { 0, 2 };
 		std::vector<int> data = { 10, 20, 30 };

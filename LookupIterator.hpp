@@ -25,6 +25,7 @@
 
 #include <iterator>
 #include <type_traits>
+#include <vector>
 
 template<class Src, class Lookup>
 struct lookup_itr {
@@ -96,7 +97,7 @@ struct lookup_t {
 	}
 };
 
-template<class Src, class Lookup>
+template<class Src, class Lookup = std::vector<std::size_t>>
 lookup_t<Src, Lookup> lookup(Src&& src, Lookup&& lookup) {
 	return lookup_t<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
 }
