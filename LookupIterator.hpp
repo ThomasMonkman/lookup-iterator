@@ -92,7 +92,7 @@ struct lookup_t {
 		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup));
 	}
 	constexpr lookup_itr<Src, Lookup> end() const {
-		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup), (lookup_itr<Src, Lookup>::End()));
+		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup), (typename lookup_itr<Src, Lookup>::End()));
 	}
 };
 
