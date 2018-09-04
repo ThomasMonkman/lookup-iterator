@@ -4,7 +4,11 @@
 | ------------- |:-------------:|
 | **Master**    | [![Master](https://travis-ci.org/ThomasMonkman/lookup-iterator.svg?branch=master)](https://travis-ci.org/ThomasMonkman/lookup-iterator)|
 
-Iterate one container with indexes from another
+A single header iterator that allows you to iterate one container with indexes from another.
+
+### Install:
+Drop [LookupIterator.hpp](https://github.com/ThomasMonkman/lookup-iterator/blob/master/LookupIterator.hpp) in to your include path and you should be good to go.
+### Examples:
 
 ```c++
 const std::vector<int> lookup_vector = { 0, 2 };
@@ -46,7 +50,7 @@ will output
 30
 ```
 
-## Requirements
+### Requirements
 ```c++
 lookup(Src src, Lookup lookup)
 ```
