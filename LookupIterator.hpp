@@ -34,8 +34,8 @@ private:
 	typedef decltype(*begin(std::declval<Src>())) src_itr_value;
 	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
 
-	Src _src;
-	Lookup _lookup;
+	const Src& _src;
+	const Lookup& _lookup;
 	lookup_itr_t _lookup_itr;
 public:
 	//static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "Src must allow random access interation");
@@ -86,8 +86,8 @@ struct lookup_t {
 	lookup_t(Src&& src, Lookup&& lookup) :
 		src(std::forward<Src>(src)),
 		lookup(std::forward<Lookup>(lookup)) {}
-	Src src;
-	Lookup lookup;
+	const Src& src;
+	const Lookup& lookup;
 
 	constexpr lookup_itr<Src, Lookup> begin() const {
 		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup));
