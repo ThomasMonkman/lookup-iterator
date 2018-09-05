@@ -8,6 +8,11 @@
 #include <map>
 #include <list>
 
+
+std::vector<int> getLookup() {
+	return { 0, 2 };
+}
+
 TEST_CASE("vector", "[vector]") {
 
 	SECTION("none const vectors") {
@@ -74,6 +79,13 @@ TEST_CASE("vector", "[vector]") {
 	SECTION("r value") {
 		const std::vector<int> data = { 10, 20, 30 };
 		auto a = lookup(data, std::vector<int>{0, 2}).begin();
+		REQUIRE(*a == 10);
+		a++;
+		REQUIRE(*a == 30);
+	}
+	SECTION("r value from function") {
+		const std::vector<int> data = { 10, 20, 30 };
+		auto a = lookup(data, getLookup()).begin();
 		REQUIRE(*a == 10);
 		a++;
 		REQUIRE(*a == 30);
