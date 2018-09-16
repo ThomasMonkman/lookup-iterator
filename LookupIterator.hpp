@@ -26,19 +26,20 @@
 #include <iterator>
 #include <type_traits>
 #include <vector>
+#include <tuple>
 
-template<class Src, class Lookup>
+template<class Lookup, class SourceTuple>
 struct lookup_itr {
 private:
-	typedef decltype(begin(std::declval<Src>())) src_itr_t;
-	typedef decltype(*begin(std::declval<Src>())) src_itr_value;
+	typedef decltype(begin(std::get<0>(std::declval<SourceTuple>()))) src_itr_t;
+	typedef decltype(*begin(std::get<0>(std::declval<SourceTuple>()))) src_itr_value;
 	typedef decltype(begin(std::declval<Lookup>())) lookup_itr_t;
 
-	Src _src;
+	SourceTuple _src;
 	Lookup _lookup;
 	lookup_itr_t _lookup_itr;
 public:
-	//static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "Src must allow random access interation");
+	//static_assert(std::is_same<typename src_itr_t::iterator_category, std::random_access_iterator_tag>::value, "SourceTuple must allow random access interation");
 
 	using value_type = typename src_itr_t::value_type;
 	using difference_type = typename lookup_itr_t::difference_type;
@@ -48,11 +49,11 @@ public:
 
 	struct End {};
 
-	lookup_itr(Src&& src, Lookup&& lookup) : _src(src), _lookup(lookup) {
+	lookup_itr(Lookup&& lookup, SourceTuple&& src) : _src(src), _lookup(lookup) {
 		using std::begin;
 		_lookup_itr = begin(_lookup);
 	}
-	lookup_itr(Src&& src, Lookup&& lookup, End) : _src(src), _lookup(lookup) {
+	lookup_itr(Lookup&& lookup, SourceTuple&& src, End) : _src(src), _lookup(lookup) {
 		using std::end;
 		_lookup_itr = end(_lookup);
 	}
@@ -76,29 +77,31 @@ public:
 		--_lookup_itr;
 		return *this;
 	}
-	decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
+	//decltype(_src[*_lookup_itr]) operator* () const { return _src[*_lookup_itr]; }
+	decltype(std::get<0>(_src)[*_lookup_itr]) operator* () const { return std::get<0>(_src)[*_lookup_itr]; }
 	bool      operator==(const lookup_itr& rhs) const { return _lookup_itr == rhs._lookup_itr; }
 	bool      operator!=(const lookup_itr& rhs) const { return _lookup_itr != rhs._lookup_itr; }
 };
 
-template<class Src, class Lookup>
+template<class Lookup, class... Src>
 struct lookup_t {
-	lookup_t(Src&& src, Lookup&& lookup) :
-		src(std::forward<Src>(src)),
+	lookup_t(Lookup&& lookup, Src&&... src) :
+		sources(std::forward<Src>(src)...),
 		lookup(std::forward<Lookup>(lookup)) {}
-	Src src;
+	using SourceTuple = std::tuple<Src...>;
+	SourceTuple sources;
 	Lookup lookup;
 
-	constexpr lookup_itr<Src, Lookup> begin() const {
-		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup));
+	constexpr lookup_itr<Lookup, SourceTuple> begin() const {
+		return lookup_itr<Lookup, SourceTuple>(Lookup(lookup), SourceTuple(sources));
 	}
-	constexpr lookup_itr<Src, Lookup> end() const {
-		return lookup_itr<Src, Lookup>(Src(src), Lookup(lookup), (typename lookup_itr<Src, Lookup>::End()));
+	constexpr lookup_itr<Lookup, SourceTuple> end() const {
+		return lookup_itr<Lookup, SourceTuple>(Lookup(lookup), SourceTuple(sources), (typename lookup_itr<Lookup, SourceTuple>::End()));
 	}
 };
 
-template<class Src, class Lookup = std::vector<std::size_t>>
-lookup_t<Src, Lookup> lookup(Src&& src, Lookup&& lookup) {
-	return lookup_t<Src, Lookup>(std::forward<Src>(src), std::forward<Lookup>(lookup));
+template<class Lookup = std::vector<std::size_t>, class... Src>
+lookup_t<Lookup, Src...> lookup(Lookup&& lookup, Src&&... src) {
+	return lookup_t<Lookup, Src...>(std::forward<Lookup>(lookup), std::forward<Src>(src)...);
 }
 #endif
